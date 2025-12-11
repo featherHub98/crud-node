@@ -30,18 +30,18 @@ app.post('/products',(req,res)=>{
         if (!data){
             return res.status(500).json({message : "no products"})
         }
-        db = JSON.parse(data).products
-        db.forEach(prod => { 
+        db = JSON.parse(data)
+        db.products.forEach(prod => { 
             if (prod.name === name){
                 return res.status(400).json({message:"product already exists"});
             }
         });
         const newProduct = {
-            id : db.length +1,
+            id : parseInt(db.products[db.products.length-1].id) +1,
             name,
             price
         }
-        db.push(newProduct);
+        db.products.push(newProduct);
         fs.writeFile(filePath, JSON.stringify(db,null,2),(err)=>{
             if (err){
                 return res.status(500).json({message : "error writing file"})

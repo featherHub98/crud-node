@@ -2,13 +2,13 @@
   "products": [
     {
       "id": "1",
-      "name": "Product 1",
-      "price": 100
+      "name": "Product 7",
+      "price": 70
     },
     {
-      "id": "3",
-      "name": "Product 5",
-      "price": 500
+      "id": 2,
+      "name": "Product 3",
+      "price": 300
     }
   ]
 }
