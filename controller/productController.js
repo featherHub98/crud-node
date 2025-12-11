@@ -5,9 +5,12 @@ const serviceProduct = require('../services/serviceProduct');
 
 
 app.get('/products', (req,res) =>{
-    
-    serviceProduct.getProducts(req,res);
-
+    serviceProduct.getProducts(req,res).then(products =>{
+        console.log("products :",products);
+     res.render('index.ejs', { products: products });}); 
+   
+   
+    // gestion des status
 });
 
 app.post('/products',(req,res)=>{

@@ -1,7 +1,8 @@
 const fs = require("fs");
 const path = require('path');
 const filePath = path.join(__dirname, '../data/db.json');
-const getProducts = (req,res) =>{
+
+/*const getProducts = (req,res) =>{
         fs.readFile(filePath,'utf-8',(err,data)=>{
             if (err){
                 return res.status(500).json({message : "error reading file"})
@@ -12,7 +13,34 @@ const getProducts = (req,res) =>{
             db = JSON.parse(data).products
            return res.status(200).json({message:"products returned", products: db})
         })
+}*/
+
+
+const getProducts = async (req, res) => {
+    return new Promise((resolve, reject) => {
+        fs.readFile(filePath, 'utf-8', (err, data) => {
+            if (err) {
+                reject("error reading file");
+                return;
+            }
+            if (!data) {
+                reject("no products");
+                return;
+            }
+            
+            const db = JSON.parse(data).products;
+            let allData = [];
+            if (db.length > 0) {
+                 allData = db
+            }
+           
+            
+            resolve(allData);  // ✅ This returns from getProducts
+        });
+    });
 }
+
+
 const addProduct = (req,res) => {
     const {name,price} = req.body;
         fs.readFile(filePath,'utf-8',(err,data)=>{
@@ -44,7 +72,7 @@ const addProduct = (req,res) => {
         })
     
     })}
-    const deleteProduct = (req,res) => {
+const deleteProduct = (req,res) => {
         const id = parseInt(req.params.id);  
         fs.readFile(filePath,'utf-8',(err,data)=>{
                 if (err){
@@ -72,7 +100,7 @@ const addProduct = (req,res) => {
         
             })
         });    }
-     const updateProduct = (req,res) => {
+ const updateProduct = (req,res) => {
             
                 const id = req.params.id;  
                 const {name,price} = req.body;
