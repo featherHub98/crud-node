@@ -21,6 +21,7 @@ app.delete('/products/:id',(req,res)=>{
 });
 app.put('/products/:id',(req,res)=>{
     serviceProduct.updateProduct(req,res);
+    
 });
 
 

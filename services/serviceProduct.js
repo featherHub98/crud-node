@@ -35,7 +35,7 @@ const getProducts = async (req, res) => {
             }
            
             
-            resolve(allData);  // ✅ This returns from getProducts
+            resolve(allData);  
         });
     });
 }
