@@ -27,14 +27,13 @@
                     data-price="<%= product.price %>">
               Update
             </button>
-            <button id="delete-btn" data-id="<%= product.id %>" >Delete</button>
+            <button id="delete-btn" onclick="deleteProduct('<%= product.id %>')" data-id="<%= product.id %>">Delete</button>
           </td>
         </tr>
       <% }) %>
     </tbody>
   </table>
 
-  <!-- Simple update form (hidden by default) -->
   <div id="updateForm" style="display: none; margin-top: 20px; padding: 10px; border: 1px solid #ccc;">
     <h3>Update Product</h3>
     <form method="POST" id="updateProductForm">
@@ -54,7 +53,7 @@
     </form>
   </div>
   <div id="createForm" style="display: none; margin-top: 20px; padding: 10px; border: 1px solid #ccc;">
-    <h3>Update Product</h3>
+    <h3>Create Product</h3>
     <form method="POST" id="createProductForm">
       <input type="hidden" name="_method" value="POST">
       <input type="hidden" id="createId">
@@ -67,7 +66,7 @@
       <input type="number" name="price" id="createPrice" step="0.01" required>
       <br><br>
       
-      <button type="submit">Save Changes</button>
+      <button type="submit" >Save Changes</button>
       <button type="button" onclick="document.getElementById('createForm').style.display='none'">Cancel</button>
     </form>
   </div>
@@ -115,7 +114,6 @@
       }
     });
      
-    let button = document.getElementById("delete-btn");
 
     let createBtn = document.getElementById("create-btn");
     createBtn.addEventListener("click", function(){
@@ -146,9 +144,25 @@
       }
     });
 
+    let deleteBtn = document.getElementById("delete-btn");
 
-  button.addEventListener("click",  function deleteProduct(){
+    function deleteProduct(id){
+      
+      fetch(`/api/products/${id}`,{
+        method:'DELETE'
+      }).then(res=>res.json())
+      .then(data=>{
+        alert(data.message)
+        location.reload()
+      }).catch(err=>{
+        alert('Error: '+ err.message)
+      })
+    }
+
+
+ /* deleteBtn.addEventListener("click",  function deleteProduct(){
       let id = this.getAttribute("data-id");
+      console.log('Deleting product with id: '+ id);
     alert('Deleting product with id: '+ id);
       fetch('/api/products/'+id,{
         method:'DELETE'
@@ -160,7 +174,7 @@
         alert('Error: '+ err.message)
       })
     });
-    
+    */
   </script>
 </body>
 </html>

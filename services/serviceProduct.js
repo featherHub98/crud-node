@@ -78,8 +78,9 @@ const deleteProduct = (req,res) => {
                 if (err){
                     return res.status(500).json({message : "error reading file"})
                 }
-                if (!data){
+                if (!data){//to be updated to use the right status code
                     return res.status(500).json({message : "no products"})
+                    
                 }
                 let newDb ;
                 let db ;
