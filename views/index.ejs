@@ -10,7 +10,7 @@
         <th>ID</th>
         <th>Name</th>
         <th>Price</th>
-        <th>Actions</th>
+        <th><button id ="create-btn">Add</button></th>
       </tr>
     </thead>
     <tbody>
@@ -27,7 +27,7 @@
                     data-price="<%= product.price %>">
               Update
             </button>
-            <button>Delete</button>
+            <button id="delete-btn" data-id="<%= product.id %>" >Delete</button>
           </td>
         </tr>
       <% }) %>
@@ -53,26 +53,41 @@
       <button type="button" onclick="document.getElementById('updateForm').style.display='none'">Cancel</button>
     </form>
   </div>
+  <div id="createForm" style="display: none; margin-top: 20px; padding: 10px; border: 1px solid #ccc;">
+    <h3>Update Product</h3>
+    <form method="POST" id="createProductForm">
+      <input type="hidden" name="_method" value="POST">
+      <input type="hidden" id="createId">
+      
+      <label>Name:</label>
+      <input type="text" name="name" id="createName" required>
+      <br><br>
+      
+      <label>Price:</label>
+      <input type="number" name="price" id="createPrice" step="0.01" required>
+      <br><br>
+      
+      <button type="submit">Save Changes</button>
+      <button type="button" onclick="document.getElementById('createForm').style.display='none'">Cancel</button>
+    </form>
+  </div>
 
   <script>
-    // Add click event to all update buttons
     document.querySelectorAll('.update-btn').forEach(button => {
       button.addEventListener('click', function() {
         const id = this.getAttribute('data-id');
         const name = this.getAttribute('data-name');
         const price = this.getAttribute('data-price');
-        
-        // Fill the form
         document.getElementById('updateId').value = id;
         document.getElementById('updateName').value = name;
         document.getElementById('updatePrice').value = price;
-        
-        // Show the form
         document.getElementById('updateForm').style.display = 'block';
       });
     });
     
-    // Handle form submission
+    
+
+
     document.getElementById('updateProductForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       
@@ -99,6 +114,53 @@
         alert('Error: ' + error.message);
       }
     });
+     
+    let button = document.getElementById("delete-btn");
+
+    let createBtn = document.getElementById("create-btn");
+    createBtn.addEventListener("click", function(){
+      document.getElementById('createForm').style.display = 'block';
+    });
+
+
+    document.getElementById('createProductForm').addEventListener('submit', async function(e){
+      e.preventDefault();
+      const name = document.getElementById('createName').value;
+      const price = document.getElementById('createPrice').value;
+      try{
+        const response = await fetch('/api/products',{
+          method:'POST',
+          headers:{
+            'Content-Type':'application/json',
+          },
+          body:JSON.stringify({name,price})
+        });
+        if (response.ok){
+          alert('Product created successfully!');
+          location.reload();
+        } else {
+          alert('Error creating product');
+        }
+      } catch (error){
+        alert('Error: '+ error.message);
+      }
+    });
+
+
+  button.addEventListener("click",  function deleteProduct(){
+      let id = this.getAttribute("data-id");
+    alert('Deleting product with id: '+ id);
+      fetch('/api/products/'+id,{
+        method:'DELETE'
+      }).then(res=>res.json())
+      .then(data=>{
+        alert(data.message)
+        location.reload()
+      }).catch(err=>{
+        alert('Error: '+ err.message)
+      })
+    });
+    
   </script>
 </body>
 </html>
