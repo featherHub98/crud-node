@@ -102,12 +102,12 @@
           },
           body: JSON.stringify({ name, price })
         });
-        
+        const result =  response.json();
         if (response.ok) {
           alert('Product updated successfully!');
-          location.reload(); // Refresh page to see changes
+          location.reload(); 
         } else {
-          alert('Error updating product');
+          alert(result.message);
         }
       } catch (error) {
         alert('Error: ' + error.message);
@@ -132,12 +132,13 @@
             'Content-Type':'application/json',
           },
           body:JSON.stringify({name,price})
-        });
+        })
+        const result = await response.json();
         if (response.ok){
           alert('Product created successfully!');
           location.reload();
         } else {
-          alert('Error creating product');
+          alert(result.message);
         }
       } catch (error){
         alert('Error: '+ error.message);

@@ -1,33 +1,32 @@
 const express = require('express');
 const app = express();
-const serviceProduct = require('../services/serviceProduct');
-
+const serviceUsers = require('../services/serviceUsers');
 
 app.use(express.json());
 
-app.get('/products', async (req, res) => {
+app.get('/users', async (req, res) => {
     try {
-        const products = await serviceProduct.getProducts(req, res);
-        console.log("products:", products);
-        res.render('index.ejs', { products: products });
+        const users = await serviceUsers.getUsers(req, res);
+        console.log("users:", users);
+        res.render('users.ejs', { users: users });
     } catch (error) {
         switch (error) {
             case 500:
                 return res.status(500).json({ message: "Server error" });
             case 404:
-                return res.status(404).json({ message: "No products found" });
+                return res.status(404).json({ message: "No users found" });
             default:
                 return res.status(500).json({ message: "Unknown error" });
         }
     }
 });
 
-app.post('/products', async (req, res) => {
+app.post('/users', async (req, res) => {
     try {
-        const result = await serviceProduct.addProduct(req, res);
+        const result = await serviceUsers.addUser(req, res);
         switch (result) {
             case 201:
-                return res.status(201).json({ message: "Product added successfully" });
+                return res.status(201).json({ message: "User added successfully" });
             default:
                 return res.status(500).json({ message: "Unknown response" });
         }
@@ -36,19 +35,19 @@ app.post('/products', async (req, res) => {
             case 500:
                 return res.status(500).json({ message: "Error processing request" });
             case 409:
-                return res.status(409).json({ message: "Product already exists" });
+                return res.status(409).json({ message: "User already exists" });
             default:
                 return res.status(500).json({ message: "Unknown error" });
         }
     }
 });
 
-app.delete('/products/:id', async (req, res) => {
+app.delete('/users/:id', async (req, res) => {
     try {
-        const result = await serviceProduct.deleteProduct(req, res);
+        const result = await serviceUsers.deleteUser(req, res);
         switch (result) {
             case 200:
-                return res.status(200).json({ message: "Product deleted successfully" });
+                return res.status(200).json({ message: "User deleted successfully" });
             default:
                 return res.status(500).json({ message: "Unknown response" });
         }
@@ -57,19 +56,19 @@ app.delete('/products/:id', async (req, res) => {
             case 500:
                 return res.status(500).json({ message: "Error processing request" });
             case 404:
-                return res.status(404).json({ message: "Product not found" });
+                return res.status(404).json({ message: "User not found" });
             default:
                 return res.status(500).json({ message: "Unknown error" });
         }
     }
 });
 
-app.put('/products/:id', async (req, res) => {
+app.put('/users/:id', async (req, res) => {
     try {
-        const result = await serviceProduct.updateProduct(req, res);
+        const result = await serviceUsers.updateUser(req, res);
         switch (result) {
             case 200:
-                return res.status(200).json({ message: "Product updated successfully" });
+                return res.status(200).json({ message: "User updated successfully" });
             default:
                 return res.status(500).json({ message: "Unknown response" });
         }
@@ -78,7 +77,7 @@ app.put('/products/:id', async (req, res) => {
             case 500:
                 return res.status(500).json({ message: "Error processing request" });
             case 404:
-                return res.status(404).json({ message: "Product not found" });
+                return res.status(404).json({ message: "User not found" });
             default:
                 return res.status(500).json({ message: "Unknown error" });
         }

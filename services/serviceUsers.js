@@ -1,7 +1,7 @@
 const fs = require('fs');
 const filePath = './data/db.json';
 
-const getProducts = async (req, res) => {
+const getUsers = async (req, res) => {
     return new Promise((resolve, reject) => {
         fs.readFile(filePath, 'utf-8', (err, data) => {
             if (err) {
@@ -14,7 +14,7 @@ const getProducts = async (req, res) => {
             }
             try {
                 const db = JSON.parse(data);
-                resolve(db.products || []);
+                resolve(db.users || []);
             } catch (error) {
                 reject(500);
             }
@@ -22,8 +22,8 @@ const getProducts = async (req, res) => {
     });
 };
 
-const addProduct = (req, res) => {
-    const { name, price } = req.body;
+const addUser = (req, res) => {
+    const { username, password } = req.body;
     
     return new Promise((resolve, reject) => {
         fs.readFile(filePath, 'utf-8', (err, data) => {
@@ -34,30 +34,30 @@ const addProduct = (req, res) => {
             
             let db;
             try {
-                db = data ? JSON.parse(data) : { products: [] };
+                db = data ? JSON.parse(data) : { users: [] };
             } catch (error) {
                 reject(500);
                 return;
             }
             
-            // Check if product already exists
-            if (db.products.some(prod => prod.name === name)) {
+            // Check if user already exists
+            if (db.users.some(user => user.username === username)) {
                 reject(409);
                 return;
             }
             
             // Generate new ID
-            const newId = db.products.length > 0 
-                ? parseInt(db.products[db.products.length - 1].id) + 1 
+            const newId = db.users.length > 0 
+                ? parseInt(db.users[db.users.length - 1].id) + 1 
                 : 1;
             
-            const newProduct = {
+            const newUser = {
                 id: newId,
-                name,
-                price
+                username,
+                password
             };
             
-            db.products.push(newProduct);
+            db.users.push(newUser);
             
             fs.writeFile(filePath, JSON.stringify(db, null, 2), (err) => {
                 if (err) {
@@ -70,7 +70,7 @@ const addProduct = (req, res) => {
     });
 };
 
-const deleteProduct = (req, res) => {
+const deleteUser = (req, res) => {
     const id = parseInt(req.params.id);
     
     return new Promise((resolve, reject) => {
@@ -93,10 +93,10 @@ const deleteProduct = (req, res) => {
                 return;
             }
             
-            const initialLength = db.products.length;
-            db.products = db.products.filter(prod => prod.id !== id);
+            const initialLength = db.users.length;
+            db.users = db.users.filter(user => user.id !== id);
             
-            if (db.products.length === initialLength) {
+            if (db.users.length === initialLength) {
                 reject(404);
                 return;
             }
@@ -112,9 +112,9 @@ const deleteProduct = (req, res) => {
     });
 };
 
-const updateProduct = (req, res) => {
+const updateUser = (req, res) => {
     const id = parseInt(req.params.id);
-    const { name, price } = req.body;
+    const { username, password } = req.body;
     
     return new Promise((resolve, reject) => {
         fs.readFile(filePath, 'utf-8', (err, data) => {
@@ -136,17 +136,17 @@ const updateProduct = (req, res) => {
                 return;
             }
             
-            const productIndex = db.products.findIndex(prod => prod.id === id);
+            const userIndex = db.users.findIndex(user => user.id === id);
             
-            if (productIndex === -1) {
+            if (userIndex === -1) {
                 reject(404);
                 return;
             }
 
-            db.products[productIndex] = {
-                ...db.products[productIndex],
-                name: name || db.products[productIndex].name,
-                price: price || db.products[productIndex].price
+            db.users[userIndex] = {
+                ...db.users[userIndex],
+                username: username || db.users[userIndex].username,
+                password: password || db.users[userIndex].password
             };
             
             fs.writeFile(filePath, JSON.stringify(db, null, 2), (err) => {
@@ -161,8 +161,8 @@ const updateProduct = (req, res) => {
 };
 
 module.exports = {
-    getProducts,
-    addProduct,
-    deleteProduct,
-    updateProduct
+    getUsers,
+    addUser,
+    deleteUser,
+    updateUser
 };
