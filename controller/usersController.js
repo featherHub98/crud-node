@@ -21,12 +21,13 @@ app.get('/users', async (req, res) => {
     }
 });
 
-app.post('/users', async (req, res) => {
+app.post('/signup', async (req, res) => {
     try {
         const result = await serviceUsers.addUser(req, res);
         switch (result) {
             case 201:
-                return res.status(201).json({ message: "User added successfully" });
+                
+                return res.redirect("/api/products")
             default:
                 return res.status(500).json({ message: "Unknown response" });
         }

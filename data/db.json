@@ -2,7 +2,7 @@
   "products": [
     {
       "id": 5,
-      "name": "product 9",
+      "name": "product 5",
       "price": "123"
     },
     {
@@ -28,8 +28,21 @@
   ],
   "users": [
     {
-      "id": 1,
+      "id": 3,
+      "username": "test1",
+      "email": "tester@gmail.com",
+      "password": "123"
+    },
+    {
+      "id": 4,
+      "username": "test2",
+      "email": "tester2@gmail.com",
+      "password": "123"
+    },
+    {
+      "id": 5,
       "username": "admin",
+      "email": "admin@gmail.com",
       "password": "123"
     }
   ]

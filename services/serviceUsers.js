@@ -47,6 +47,7 @@ const loginUser = (req, res) => {
             const user = db.users.find(user => user.username === username && user.password === password);
             if (user) {
                 const payload = { id: user.id, username: user.username };
+                console.log("user",user)
                 try {
                     const token = jwt.sign(payload, jwtSecret, { expiresIn: '1h' });
                     console.log('token',token);
@@ -65,7 +66,7 @@ const loginUser = (req, res) => {
     });
 };
 const addUser = (req, res) => {
-    const { username, password } = req.body;
+    const { username,email, password } = req.body;
     
     return new Promise((resolve, reject) => {
         fs.readFile(filePath, 'utf-8', (err, data) => {
@@ -81,14 +82,12 @@ const addUser = (req, res) => {
                 reject(500);
                 return;
             }
-            
-            // Check if user already exists
+
             if (db.users.some(user => user.username === username)) {
                 reject(409);
                 return;
             }
             
-            // Generate new ID
             const newId = db.users.length > 0 
                 ? parseInt(db.users[db.users.length - 1].id) + 1 
                 : 1;
@@ -96,6 +95,7 @@ const addUser = (req, res) => {
             const newUser = {
                 id: newId,
                 username,
+                email,
                 password
             };
             
