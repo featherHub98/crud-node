@@ -39,14 +39,12 @@ const addProduct = (req, res) => {
                 reject(500);
                 return;
             }
-            
-            // Check if product already exists
+        
             if (db.products.some(prod => prod.name === name)) {
                 reject(409);
                 return;
             }
-            
-            // Generate new ID
+   
             const newId = db.products.length > 0 
                 ? parseInt(db.products[db.products.length - 1].id) + 1 
                 : 1;

@@ -1,6 +1,9 @@
 const fs = require('fs');
 const filePath = './data/db.json';
-
+const dotenv = require('dotenv');
+dotenv.config();
+const jwt = require('jsonwebtoken');
+const jwtSecret = process.env.JWT_SECRET;
 const getUsers = async (req, res) => {
     return new Promise((resolve, reject) => {
         fs.readFile(filePath, 'utf-8', (err, data) => {
@@ -21,7 +24,46 @@ const getUsers = async (req, res) => {
         });
     });
 };
-
+const loginUser = (req, res) => {
+    const { username, password } = req.body;
+    return new Promise((resolve, reject) => {
+        fs.readFile(filePath, 'utf-8', (err, data) => {
+            if (err) {
+                reject(500);
+                return;
+            }
+            if (!data) {
+                reject(404);
+                return;
+            }
+            let db;
+            try {
+                db = JSON.parse(data);
+            } catch (error) {
+                reject(500);
+                return;
+            }
+           
+            const user = db.users.find(user => user.username === username && user.password === password);
+            if (user) {
+                const payload = { id: user.id, username: user.username };
+                try {
+                    const token = jwt.sign(payload, jwtSecret, { expiresIn: '1h' });
+                    console.log('token',token);
+                    resolve({ 
+                        status: 200,
+                        token: token,
+                        redirectUrl: 'http://localhost:3000/api/products'
+                    });
+                } catch (error) {
+                    reject( 500);
+                }
+            }else {
+                reject(401);
+            }
+        });
+    });
+};
 const addUser = (req, res) => {
     const { username, password } = req.body;
     
@@ -164,5 +206,6 @@ module.exports = {
     getUsers,
     addUser,
     deleteUser,
-    updateUser
+    updateUser,
+    loginUser
 };

@@ -41,7 +41,30 @@ app.post('/users', async (req, res) => {
         }
     }
 });
-
+app.post('/login', async (req, res) => {
+    try {
+        const result = await serviceUsers.loginUser(req, res);
+           /* return res.status(200).json({ 
+                message: "Login successful", 
+                token: result.token,
+                redirectUrl: result.redirectUrl
+            });*/
+             res.cookie('token', result.token, { httpOnly: true });
+             return res.redirect(result.redirectUrl);
+        }
+     catch (error) {
+        
+        switch (error) {  
+            case 500:
+                return res.status(500).json({ message: "Error processing request" });
+            case 404:
+                return res.status(404).json({ message: "No users found" });
+            case 401:
+                return res.status(401).json({ message: "Invalid credentials" });
+            default:
+                return res.status(500).json({ message: "Unknown error" });
+        }
+    }});
 app.delete('/users/:id', async (req, res) => {
     try {
         const result = await serviceUsers.deleteUser(req, res);

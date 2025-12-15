@@ -2,7 +2,8 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const productController = require('./controller/productController')
-const usersController = require('./controller/usersController')
+const usersController = require('./controller/usersController');
+require('dotenv').config();
 const port = 3000;
 app.set('view-engine', 'ejs');
 app.use(cors());
