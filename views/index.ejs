@@ -461,6 +461,7 @@ table, #updateForm, #createForm {
           headers: {
             'Content-Type': 'application/json',
           },
+          credentials: 'include',
           body: JSON.stringify({ name, price })
         });
         const result =  response.json();
@@ -492,6 +493,7 @@ table, #updateForm, #createForm {
           headers:{
             'Content-Type':'application/json',
           },
+          credentials: 'include',
           body:JSON.stringify({name,price})
         })
         const result = await response.json();
@@ -511,7 +513,8 @@ table, #updateForm, #createForm {
     function deleteProduct(id){
       
       fetch(`/api/products/${id}`,{
-        method:'DELETE'
+        method:'DELETE',
+        credentials: 'include'
       }).then(res=>res.json())
       .then(data=>{
         alert(data.message)
@@ -522,21 +525,6 @@ table, #updateForm, #createForm {
     }
 
 
- /* deleteBtn.addEventListener("click",  function deleteProduct(){
-      let id = this.getAttribute("data-id");
-      console.log('Deleting product with id: '+ id);
-    alert('Deleting product with id: '+ id);
-      fetch('/api/products/'+id,{
-        method:'DELETE'
-      }).then(res=>res.json())
-      .then(data=>{
-        alert(data.message)
-        location.reload()
-      }).catch(err=>{
-        alert('Error: '+ err.message)
-      })
-    });
-    */
   </script>
 </body>
 </html>

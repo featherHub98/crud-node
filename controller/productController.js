@@ -1,11 +1,13 @@
 const express = require('express');
 const app = express();
 const serviceProduct = require('../services/serviceProduct');
-
+const jwtService = require("../services/jwtService")
 
 app.use(express.json());
 
-app.get('/products', async (req, res) => {
+app.get('/products',jwtService.verifyToken, async (req, res) => {
+    
+    
     try {
         const products = await serviceProduct.getProducts(req, res);
         console.log("products:", products);
@@ -22,7 +24,7 @@ app.get('/products', async (req, res) => {
     }
 });
 
-app.post('/products', async (req, res) => {
+app.post('/products',jwtService.verifyToken, async (req, res) => {
     try {
         const result = await serviceProduct.addProduct(req, res);
         switch (result) {
@@ -43,7 +45,7 @@ app.post('/products', async (req, res) => {
     }
 });
 
-app.delete('/products/:id', async (req, res) => {
+app.delete('/products/:id', jwtService.verifyToken,async (req, res) => {
     try {
         const result = await serviceProduct.deleteProduct(req, res);
         switch (result) {
@@ -64,7 +66,7 @@ app.delete('/products/:id', async (req, res) => {
     }
 });
 
-app.put('/products/:id', async (req, res) => {
+app.put('/products/:id',jwtService.verifyToken, async (req, res) => {
     try {
         const result = await serviceProduct.updateProduct(req, res);
         switch (result) {
