@@ -392,11 +392,11 @@
         <td>{{name}}</td>
         <td>${{price}}</td>
         <td>
-          <button class="update-btn" popovertarget="update-modal" data-id="{{id}}" data-name="{{name}}"
+          <button class="update-btn" popovertarget="update-modal-{{id}}" data-id="{{id}}" data-name="{{name}}"
             data-price="{{price}}">
             Update
           </button>
-          </div>
+        
           <form action="/api/products/delete" method="POST" style="display: inline;">
             <input type="hidden" name="_method" value="DELETE">
             <input type="hidden" name="id" value="{{id}}">
@@ -407,11 +407,7 @@
           </form>
         </td>
       </tr>
-      {{/each}}
-    </tbody>
-  </table>
-
-  <div id="update-modal" popover>
+       <div id="update-modal-{{id}}" popover>
     <div style="padding: 20px; max-width: 500px;">
       <h3>Update Product</h3>
       <form action='/api/products/update' method="POST" >
@@ -442,7 +438,12 @@
         </div>
       </form>
     </div>
+ </div>
+      {{/each}}
+    </tbody>
+  </table>
 
+  
 
 
     <div id="create-modal" popover>
