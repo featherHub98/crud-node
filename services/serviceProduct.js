@@ -69,8 +69,8 @@ const addProduct = (req, res) => {
 };
 
 const deleteProduct = (req, res) => {
-    const id = parseInt(req.params.id);
-    
+    //const id = parseInt(req.params.id);
+    const id = parseInt(req.body.id);
     return new Promise((resolve, reject) => {
         fs.readFile(filePath, 'utf-8', (err, data) => {
             if (err) {
@@ -111,8 +111,8 @@ const deleteProduct = (req, res) => {
 };
 
 const updateProduct = (req, res) => {
-    const id = parseInt(req.params.id);
-    const { name, price } = req.body;
+    
+    const {id, name, price } = req.body;
     
     return new Promise((resolve, reject) => {
         fs.readFile(filePath, 'utf-8', (err, data) => {
@@ -134,7 +134,7 @@ const updateProduct = (req, res) => {
                 return;
             }
             
-            const productIndex = db.products.findIndex(prod => prod.id === id);
+            const productIndex = db.products.findIndex(prod => prod.id === parseInt(id));
             
             if (productIndex === -1) {
                 reject(404);

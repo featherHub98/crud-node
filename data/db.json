@@ -1,29 +1,24 @@
 {
   "products": [
     {
-      "id": 5,
-      "name": "product 5",
+      "id": 10,
+      "name": "Product 4",
+      "price": "426"
+    },
+    {
+      "id": 11,
+      "name": "Product 7",
       "price": "123"
     },
     {
-      "id": 7,
+      "id": 12,
+      "name": "product 9",
+      "price": "999"
+    },
+    {
+      "id": 13,
       "name": "Product 1",
-      "price": "300"
-    },
-    {
-      "id": 8,
-      "name": "product 11",
-      "price": "2500"
-    },
-    {
-      "id": 9,
-      "name": "Product 6",
-      "price": "785"
-    },
-    {
-      "id": 10,
-      "name": "Product 8",
-      "price": "425"
+      "price": "111"
     }
   ],
   "users": [

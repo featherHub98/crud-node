@@ -7,11 +7,10 @@ app.use(express.json());
 
 app.get('/products',jwtService.verifyToken, async (req, res) => {
     
-    
     try {
         const products = await serviceProduct.getProducts(req, res);
         console.log("products:", products);
-        res.render('index.ejs', { products: products });
+        res.render('index', { products: products });
     } catch (error) {
         switch (error) {
             case 500:
@@ -29,7 +28,7 @@ app.post('/products',jwtService.verifyToken, async (req, res) => {
         const result = await serviceProduct.addProduct(req, res);
         switch (result) {
             case 201:
-                return res.status(201).json({ message: "Product added successfully" });
+                return res.status(201).redirect('/api/products');
             default:
                 return res.status(500).json({ message: "Unknown response" });
         }
@@ -45,12 +44,13 @@ app.post('/products',jwtService.verifyToken, async (req, res) => {
     }
 });
 
-app.delete('/products/:id', jwtService.verifyToken,async (req, res) => {
+app.delete('/products/delete', jwtService.verifyToken,async (req, res) => {
     try {
         const result = await serviceProduct.deleteProduct(req, res);
         switch (result) {
             case 200:
-                return res.status(200).json({ message: "Product deleted successfully" });
+                
+                return res.status(200).redirect('/api/products');
             default:
                 return res.status(500).json({ message: "Unknown response" });
         }
@@ -66,12 +66,12 @@ app.delete('/products/:id', jwtService.verifyToken,async (req, res) => {
     }
 });
 
-app.put('/products/:id',jwtService.verifyToken, async (req, res) => {
+app.put('/products/update',jwtService.verifyToken, async (req, res) => {
     try {
         const result = await serviceProduct.updateProduct(req, res);
         switch (result) {
             case 200:
-                return res.status(200).json({ message: "Product updated successfully" });
+                return res.status(200).redirect('/api/products');
             default:
                 return res.status(500).json({ message: "Unknown response" });
         }
