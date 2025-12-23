@@ -324,7 +324,7 @@
       }
     }
 
-    /* Footer (if needed) */
+
     footer {
       background-color: #222;
       color: #fff;
@@ -392,13 +392,42 @@
         <td>{{this.name}}</td>
         <td>${{this.price}}</td>
         <td>
-          <button class="update-btn" 
-                popovertarget="update-modal"
-                data-id="{{this.id}}" 
-                data-name="{{this.name}}" 
-                data-price="{{this.price}}">
-          Update
-        </button>
+          <button class="update-btn" popovertarget="update-modal" data-id="{{this.id}}" data-name="{{this.name}}"
+            data-price="{{this.price}}">
+            Update
+          </button>
+          <div id="update-modal" popover>
+            <div style="padding: 20px; max-width: 500px;">
+              <h3>Update Product</h3>
+              <form action='/api/products/update' method="POST" id="updateProductForm">
+                <input type="hidden" name="_method" value="PUT">
+                <input type="hidden" id="updateId" name="id">
+
+                <div style="margin-bottom: 15px;">
+                  <label style="display: block; margin-bottom: 5px; font-weight: 600;">Name:</label>
+                  <input type="text" name="name" id="updateName" value="{{this.name}}" required
+                    style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                  <label style="display: block; margin-bottom: 5px; font-weight: 600;">Price:</label>
+                  <input type="number" name="price" id="updatePrice" step="0.01" value="{{this.price}}" required
+                    style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                  <button type="submit"
+                    style="padding: 10px 20px; background: #FF4B2B; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    Save Changes
+                  </button>
+                  <button type="button" popovertarget="update-modal" popovertargetaction="hide"
+                    style="padding: 10px 20px; background: #f0f0f0; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;">
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
           <form action="/api/products/delete" method="POST" style="display: inline;">
             <input type="hidden" name="_method" value="DELETE">
             <input type="hidden" name="id" value="{{this.id}}">
@@ -413,39 +442,7 @@
     </tbody>
   </table>
 
-  <div id="update-modal" popover>
-    
-    <div style="padding: 20px; max-width: 500px;">
-      <h3>Update Product</h3>
-      <form action='/api/products/update'method="POST" id="updateProductForm">
-        <input type="hidden" name="_method" value="PUT">
-        <input type="hidden" id="updateId" name="id" >
 
-        <div style="margin-bottom: 15px;">
-          <label style="display: block; margin-bottom: 5px; font-weight: 600;">Name:</label>
-          <input type="text" name="name" id="updateName" value="{{this.name}}"required
-            style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-        </div>
-
-        <div style="margin-bottom: 20px;">
-          <label style="display: block; margin-bottom: 5px; font-weight: 600;">Price:</label>
-          <input type="number" name="price" id="updatePrice" step="0.01" value="{{this.price}}" required
-            style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-        </div>
-
-        <div style="display: flex; gap: 10px; justify-content: flex-end;">
-          <button type="submit"
-            style="padding: 10px 20px; background: #FF4B2B; color: white; border: none; border-radius: 4px; cursor: pointer;">
-            Save Changes
-          </button>
-          <button type="button" popovertarget="update-modal" popovertargetaction="hide"
-            style="padding: 10px 20px; background: #f0f0f0; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;">
-            Cancel
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
 
 
   <div id="create-modal" popover>
@@ -481,19 +478,7 @@
   </div>
 
   <script>
-   document.querySelectorAll('.update-btn').forEach(button => {
-    button.addEventListener('click', function() {
-      const id = this.getAttribute('data-id');
-      const name = this.getAttribute('data-name');
-      const price = this.getAttribute('data-price');
-      
-      document.getElementById('updateId').value = id;
-      document.getElementById('updateName').value = name;
-      document.getElementById('updatePrice').value = price;
-      
-      
-    });
-  });
+
 
 
 
