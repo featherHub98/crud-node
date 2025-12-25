@@ -45,12 +45,9 @@ app.post('/signup', async (req, res) => {
 app.post('/login', async (req, res) => {
     try {
         const result = await serviceUsers.loginUser(req, res);
-           /* return res.status(200).json({ 
-                message: "Login successful", 
-                token: result.token,
-                redirectUrl: result.redirectUrl
-            });*/
+         
              res.cookie('token', result.token, { httpOnly: true });
+             res.cookie('refreshToken', result.refreshToken, { httpOnly: true });
              return res.redirect(result.redirectUrl);
         }
      catch (error) {

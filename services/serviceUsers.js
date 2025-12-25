@@ -3,7 +3,9 @@ const filePath = './data/db.json';
 const dotenv = require('dotenv');
 dotenv.config();
 const jwt = require('jsonwebtoken');
+const { path } = require('../controller/productController');
 const jwtSecret = process.env.JWT_SECRET;
+const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 const getUsers = async (req, res) => {
     return new Promise((resolve, reject) => {
         fs.readFile(filePath, 'utf-8', (err, data) => {
@@ -46,14 +48,22 @@ const loginUser = (req, res) => {
            
             const user = db.users.find(user => user.username === username && user.password === password);
             if (user) {
+                const cookieOptions = {
+                    httpOnly: true,
+                    path: '/'
+                    // secure: true, // Uncomment if using HTTPS
+                };
                 const payload = { id: user.id, username: user.username };
+                
                 console.log("user",user)
                 try {
-                    const token = jwt.sign(payload, jwtSecret, { expiresIn: '1h' });
+                    const token = jwt.sign(payload, jwtSecret, cookieOptions);
+                    const refreshToken = jwt.sign({id: user.id}, refreshTokenSecret, cookieOptions);
                     console.log('token',token);
                     resolve({ 
                         status: 200,
                         token: token,
+                        refreshToken: refreshToken,
                         redirectUrl: 'http://localhost:3000/api/products'
                     });
                 } catch (error) {

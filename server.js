@@ -16,7 +16,7 @@ app.engine('hbs', exphbs.engine({
 }));
 app.set('view engine', 'hbs');
 app.set('views', './views');
-
+app.use(express.static('public'));
 
 app.use(cookieParser());
 app.use(cors());
