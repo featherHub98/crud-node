@@ -1,0 +1,15 @@
+tag dev:
+
+docker run -p 3000:3000 -v ${PWD}:/app crud-node:dev
+
+
+docker run -p 3000:3000 `
+  -e JWT_SECRET="Your_Very_Long_And_Random_Secret_Key_Here_1234567890" `
+  -e REFRESH_TOKEN_SECRET="your_refresh_token_secret_key" `
+  -v ${PWD}:/app `
+  crud-node:dev
+
+tag prod:
+
+docker build -t crud-node:prod .
+docker run -p 3000:3000 crud-node:prod

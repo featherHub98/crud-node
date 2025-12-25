@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  crud-app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - JWT_SECRET=Your_Very_Long_And_Random_Secret_Key_Here_1234567890
+      - REFRESH_TOKEN_SECRET=your_refresh_token_secret_key
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
