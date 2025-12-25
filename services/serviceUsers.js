@@ -48,17 +48,13 @@ const loginUser = (req, res) => {
            
             const user = db.users.find(user => user.username === username && user.password === password);
             if (user) {
-                const cookieOptions = {
-                    httpOnly: true,
-                    path: '/'
-                    // secure: true, // Uncomment if using HTTPS
-                };
+                
                 const payload = { id: user.id, username: user.username };
                 
                 console.log("user",user)
                 try {
-                    const token = jwt.sign(payload, jwtSecret, cookieOptions);
-                    const refreshToken = jwt.sign({id: user.id}, refreshTokenSecret, cookieOptions);
+                    const token = jwt.sign(payload, jwtSecret, { expiresIn: '1h' });
+                    const refreshToken = jwt.sign({id: user.id}, refreshTokenSecret, { expiresIn: '7d' });
                     console.log('token',token);
                     resolve({ 
                         status: 200,

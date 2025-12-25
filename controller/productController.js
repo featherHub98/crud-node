@@ -87,29 +87,5 @@ app.put('/products/update',jwtService.verifyToken, async (req, res) => {
         }
     }
 });
-app.post('/refresh', jwtService.verifyRefreshToken, async (req, res) => {
-    const cookieOptions = {
-                    httpOnly: true,
-                    path: '/'
-                    // secure: true, // Uncomment if using HTTPS
-                };
-    try {
-        const user = req.user.id;
-        res.clearCookie('token', { path: '/', httpOnly: true });
-        res.clearCookie('refreshToken', { path: '/', httpOnly: true });
-        const newToken = jwt.sign({ id: user }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        const newRefreshToken = jwt.sign({ id: user }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
-        res.cookie('token', newToken, cookieOptions);
-        res.cookie('refreshToken', newRefreshToken, cookieOptions);
-        return res.redirect('/api/products');
-    } catch (error) {
-        console.error('Token refresh error:', error);
-        return res.status(500).json({ message: 'Failed to refresh token' });
-    }
-})
-app.post('/logout', (req, res) => {
-    res.clearCookie('token', { path: '/', httpOnly: true });
-    res.clearCookie('refreshToken', { path: '/', httpOnly: true });
-    return res.status(200).json({ message: 'Logged out successfully' });
-});
+
 module.exports = app;

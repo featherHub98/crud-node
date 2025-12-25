@@ -1,7 +1,8 @@
 const express = require('express');
 const app = express();
 const serviceUsers = require('../services/serviceUsers');
-
+const jwtService = require("../services/jwtService");
+const jwt = require('jsonwebtoken');
 app.use(express.json());
 
 app.get('/users', async (req, res) => {
@@ -45,9 +46,13 @@ app.post('/signup', async (req, res) => {
 app.post('/login', async (req, res) => {
     try {
         const result = await serviceUsers.loginUser(req, res);
-         
-             res.cookie('token', result.token, { httpOnly: true });
-             res.cookie('refreshToken', result.refreshToken, { httpOnly: true });
+         const cookieOptions = {
+                    httpOnly: true,
+                    path: '/'
+                    // secure: true, // Uncomment if using HTTPS
+                };
+             res.cookie('token', result.token, cookieOptions);
+             res.cookie('refreshToken', result.refreshToken, cookieOptions);
              return res.redirect(result.redirectUrl);
         }
      catch (error) {
@@ -104,5 +109,29 @@ app.put('/users/:id', async (req, res) => {
         }
     }
 });
-
+app.post('/refresh', jwtService.verifyRefreshToken, async (req, res) => {
+    const cookieOptions = {
+                    httpOnly: true,
+                    path: '/'
+                    // secure: true, // Uncomment if using HTTPS
+                };
+    try {
+        const user = req.user.id;
+        res.clearCookie('token', { path: '/', httpOnly: true });
+        res.clearCookie('refreshToken', { path: '/', httpOnly: true });
+        const newToken = jwt.sign({ id: user }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const newRefreshToken = jwt.sign({ id: user }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+        res.cookie('token', newToken, cookieOptions);
+        res.cookie('refreshToken', newRefreshToken, cookieOptions);
+        return res.redirect('/api/products');
+    } catch (error) {
+        console.error('Token refresh error:', error);
+        return res.status(500).json({ message: 'Failed to refresh token' });
+    }
+})
+app.post('/logout', (req, res) => {
+    res.clearCookie('token', { path: '/', httpOnly: true });
+    res.clearCookie('refreshToken', { path: '/', httpOnly: true });
+    return res.status(200).redirect('/');
+});
 module.exports = app;
