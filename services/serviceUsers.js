@@ -1,61 +1,59 @@
-const fs = require('fs');
-const filePath = './data/db.json';
+// const pool = require('./db');
+const User = require('../models/User');
+
 const dotenv = require('dotenv');
 dotenv.config();
 const jwt = require('jsonwebtoken');
-const { path } = require('../controller/productController');
+
 const jwtSecret = process.env.JWT_SECRET;
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
+
 const getUsers = async (req, res) => {
-    return new Promise((resolve, reject) => {
-        fs.readFile(filePath, 'utf-8', (err, data) => {
-            if (err) {
-                reject(500);
-                return;
-            }
-            if (!data) {
-                reject(404);
-                return;
-            }
-            try {
-                const db = JSON.parse(data);
-                resolve(db.users || []);
-            } catch (error) {
-                reject(500);
-            }
-        });
-    });
+    try {
+        
+        // const result = await pool.query('SELECT * FROM users');
+        // return result.rows;
+       
+        const users = await User.findAll();
+        return users;
+    } catch (error) {
+        console.error('Database error:', error);
+        throw 500;
+    }
 };
 const loginUser = (req, res) => {
     const { username, password } = req.body;
-    return new Promise((resolve, reject) => {
-        fs.readFile(filePath, 'utf-8', (err, data) => {
-            if (err) {
-                reject(500);
-                return;
-            }
-            if (!data) {
-                reject(404);
-                return;
-            }
-            let db;
-            try {
-                db = JSON.parse(data);
-            } catch (error) {
-                reject(500);
-                return;
-            }
+    return new Promise(async (resolve, reject) => {
+        try {
+          
+            // const result = await pool.query(
+            //     'SELECT * FROM users WHERE username = $1 AND password = $2',
+            //     [username, password]
+            // );
+            
+            // if (result.rows.length > 0) {
+            //     const user = result.rows[0];
+            //     const payload = { id: user.id, username: user.username };
+                
+            //     console.log("user", user);
+            
            
-            const user = db.users.find(user => user.username === username && user.password === password);
+            const user = await User.findOne({ 
+                where: { 
+                    username: username, 
+                    password: password 
+                } 
+            });
+            
             if (user) {
+                const userData = user.get({ plain: true });
+                const payload = { id: userData.id, username: userData.username };
                 
-                const payload = { id: user.id, username: user.username };
-                
-                console.log("user",user)
+                console.log("user", userData);
                 try {
                     const token = jwt.sign(payload, jwtSecret, { expiresIn: '1h' });
-                    const refreshToken = jwt.sign({id: user.id}, refreshTokenSecret, { expiresIn: '7d' });
-                    console.log('token',token);
+                    const refreshToken = jwt.sign({id: userData.id}, refreshTokenSecret, { expiresIn: '7d' });
+                    console.log('token', token);
                     resolve({ 
                         status: 200,
                         token: token,
@@ -63,100 +61,88 @@ const loginUser = (req, res) => {
                         redirectUrl: 'http://localhost:3000/api/products'
                     });
                 } catch (error) {
-                    reject( 500);
+                    reject(500);
                 }
-            }else {
+            } else {
                 reject(401);
             }
-        });
+        } catch (error) {
+            console.error('Database error:', error);
+            reject(500);
+        }
     });
 };
 const addUser = (req, res) => {
-    const { username,email, password } = req.body;
+    const { username, email, password } = req.body;
     
-    return new Promise((resolve, reject) => {
-        fs.readFile(filePath, 'utf-8', (err, data) => {
-            if (err) {
-                reject(500);
-                return;
-            }
+    return new Promise(async (resolve, reject) => {
+        try {
+          
+            // const existingUser = await pool.query(
+            //     'SELECT * FROM users WHERE username = $1',
+            //     [username]
+            // );
             
-            let db;
-            try {
-                db = data ? JSON.parse(data) : { users: [] };
-            } catch (error) {
-                reject(500);
-                return;
-            }
-
-            if (db.users.some(user => user.username === username)) {
+            // if (existingUser.rows.length > 0) {
+            //     reject(409);
+            //     return;
+            // }
+            
+            // const result = await pool.query(
+            //     'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id',
+            //     [username, email, password]
+            // );
+            
+            // if (result.rows.length > 0) {
+            //     resolve(201);
+            // }
+            
+            const existingUser = await User.findOne({ where: { username } });
+            
+            if (existingUser) {
                 reject(409);
                 return;
             }
             
-            const newId = db.users.length > 0 
-                ? parseInt(db.users[db.users.length - 1].id) + 1 
-                : 1;
+            const newUser = await User.create({ username, email, password });
             
-            const newUser = {
-                id: newId,
-                username,
-                email,
-                password
-            };
-            
-            db.users.push(newUser);
-            
-            fs.writeFile(filePath, JSON.stringify(db, null, 2), (err) => {
-                if (err) {
-                    reject(500);
-                    return;
-                }
+            if (newUser) {
                 resolve(201);
-            });
-        });
+            }
+        } catch (error) {
+            console.error('Database error:', error);
+            reject(500);
+        }
     });
 };
 
 const deleteUser = (req, res) => {
     const id = parseInt(req.params.id);
     
-    return new Promise((resolve, reject) => {
-        fs.readFile(filePath, 'utf-8', (err, data) => {
-            if (err) {
-                reject(500);
-                return;
-            }
+    return new Promise(async (resolve, reject) => {
+        try {
+            // const result = await pool.query(
+            //     'DELETE FROM users WHERE id = $1',
+            //     [id]
+            // );
             
-            if (!data) {
+            // if (result.rowCount === 0) {
+            //     reject(404);
+            //     return;
+            // }
+            
+            const deletedCount = await User.destroy({ where: { id } });
+            
+            if (deletedCount === 0) {
                 reject(404);
                 return;
             }
             
-            let db;
-            try {
-                db = JSON.parse(data);
-            } catch (error) {
-                reject(500);
-                return;
-            }
-            
-            const initialLength = db.users.length;
-            db.users = db.users.filter(user => user.id !== id);
-            
-            if (db.users.length === initialLength) {
-                reject(404);
-                return;
-            }
-            
-            fs.writeFile(filePath, JSON.stringify(db, null, 2), (err) => {
-                if (err) {
-                    reject(500);
-                    return;
-                }
-                resolve(200);
-            });
-        });
+            resolve(200);
+        } catch (error) {
+            console.error('Database error:', error);
+            reject(500);
+        }
     });
 };
 
@@ -164,47 +150,44 @@ const updateUser = (req, res) => {
     const id = parseInt(req.params.id);
     const { username, password } = req.body;
     
-    return new Promise((resolve, reject) => {
-        fs.readFile(filePath, 'utf-8', (err, data) => {
-            if (err) {
-                reject(500);
-                return;
-            }
+    return new Promise(async (resolve, reject) => {
+        try {
+            // const userCheck = await pool.query(
+            //     'SELECT * FROM users WHERE id = $1',
+            //     [id]
+            // );
             
-            if (!data) {
+            // if (userCheck.rows.length === 0) {
+            //     reject(404);
+            //     return;
+            // }
+            
+            // const user = userCheck.rows[0];
+            // const updatedUsername = username || user.username;
+            // const updatedPassword = password || user.password;
+            
+            // const result = await pool.query(
+            //     'UPDATE users SET username = $1, password = $2 WHERE id = $3',
+            //     [updatedUsername, updatedPassword, id]
+            // );
+            
+            const user = await User.findByPk(id);
+            
+            if (!user) {
                 reject(404);
                 return;
             }
             
-            let db;
-            try {
-                db = JSON.parse(data);
-            } catch (error) {
-                reject(500);
-                return;
-            }
+            const updatedUsername = username || user.username;
+            const updatedPassword = password || user.password;
             
-            const userIndex = db.users.findIndex(user => user.id === id);
+            await user.update({ username: updatedUsername, password: updatedPassword });
             
-            if (userIndex === -1) {
-                reject(404);
-                return;
-            }
-
-            db.users[userIndex] = {
-                ...db.users[userIndex],
-                username: username || db.users[userIndex].username,
-                password: password || db.users[userIndex].password
-            };
-            
-            fs.writeFile(filePath, JSON.stringify(db, null, 2), (err) => {
-                if (err) {
-                    reject(500);
-                    return;
-                }
-                resolve(200);
-            });
-        });
+            resolve(200);
+        } catch (error) {
+            console.error('Database error:', error);
+            reject(500);
+        }
     });
 };
 

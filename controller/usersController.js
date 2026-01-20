@@ -11,14 +11,14 @@ app.get('/users', async (req, res) => {
         console.log("users:", users);
         res.render('users.ejs', { users: users });
     } catch (error) {
-        switch (error) {
-            case 500:
-                return res.status(500).json({ message: "Server error" });
-            case 404:
-                return res.status(404).json({ message: "No users found" });
-            default:
-                return res.status(500).json({ message: "Unknown error" });
+        console.error('Users route error:', error);
+        if (error === 500 || (error && error.code === 'ECONNREFUSED')) {
+            return res.status(500).json({ message: "Server error", details: error.message });
         }
+        if (error === 404) {
+            return res.status(404).json({ message: "No users found" });
+        }
+        return res.status(500).json({ message: "Unknown error", details: error.message || error });
     }
 });
 
