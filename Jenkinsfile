@@ -1,10 +1,16 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'node:25.4.0-alpine'
+            args '-u root'
+        }
+    }
     
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
+                sh 'node --version && npm --version'
             }
         }
         
@@ -16,21 +22,8 @@ pipeline {
         
         stage('Test') {
             steps {
-                sh 'npm test || echo "Tests completed"'
+                sh 'npm test || echo "Tests not configured"'
             }
-        }
-        
-        stage('Build') {
-            steps {
-                sh 'mkdir -p logs public/uploads'
-                echo "✅ Build completed for ${env.JOB_NAME}"
-            }
-        }
-    }
-    
-    post {
-        always {
-            echo "Pipeline ${currentBuild.currentResult} for ${env.JOB_NAME}"
         }
     }
 }
